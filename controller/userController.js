@@ -91,11 +91,15 @@ exports.createNotes = catchAsyncError(async (req, res) => {
 
 exports.getAllNotes = catchAsyncError(async (req, res) => {
 
-    const { notes } = await User.findById(req.user._id);
+    let user;
+    if (req.user) {
+        user = await User.findById(req.user._id);
+    } else {
+        user = null;
+    }
 
     res.status(200).json({
-        message: "Note created successfully.",
-        notes,
+        notes: user.notes
     })
 })
 
@@ -120,7 +124,7 @@ exports.removeNote = catchAsyncError(async (req, res) => {
 exports.getUserDetails = catchAsyncError(async (req, res) => {
     let user;
     if (req.user) {
-        user = await User.findById(req.user._id);
+        user = await User.findOne({ _id: req.user._id });
     }
     else {
         user = null;
