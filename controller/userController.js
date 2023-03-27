@@ -104,6 +104,23 @@ exports.getAllNotes = catchAsyncError(async (req, res) => {
 })
 
 
+exports.editNote = catchAsyncError(async (req, res) => {
+    const newNote = await User.updateOne({ 'notes._id': req.params.id }, {
+        $set: {
+            'notes.$.title': req.body.title,
+            'notes.$.description': req.body.description,
+        }
+    }, { new: true });
+
+    const { notes } = await User.findById(req.user._id);
+
+    res.status(200).json({
+        message: "Note Updated successfully.",
+        notes
+    })
+})
+
+
 exports.removeNote = catchAsyncError(async (req, res) => {
     const newNote = await User.updateOne({ _id: req.user._id }, {
         $pull: {
@@ -120,6 +137,7 @@ exports.removeNote = catchAsyncError(async (req, res) => {
         notes
     })
 })
+
 
 exports.getUserDetails = catchAsyncError(async (req, res) => {
     let user;
